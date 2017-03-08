@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -25,21 +26,48 @@ namespace WakeUpANDSuspend
                                                            IntPtr pfnCompletionRoutine,
                                                            IntPtr lpArgToCompletionRoutine,
                                                              bool fResume);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CancelWaitableTimer([In] SafeWaitHandle hTimer);
 
         public event EventHandler Woken;
 
-        private BackgroundWorker bgWorker = new BackgroundWorker();
+        private BackgroundWorker bgWorker;
+
+        SafeWaitHandle handle;
+        EventWaitHandle wh;
 
         public WakeUP()
         {
-            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
-            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+            
         }
 
         public void SetWakeUpTime(DateTime time)
         {
+            bgWorker = new BackgroundWorker();
+            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+            bgWorker.WorkerSupportsCancellation = true;
+
             bgWorker.RunWorkerAsync(time.ToFileTime());
         }
+        
+        public void StopWorkerAsync()
+        {
+            CancelWaitableTimer(handle);
+            bgWorker.CancelAsync();
+            bgWorker.Dispose();
+        }
+
+        //public static bool EnableHibernate()
+        //{
+        //    Process p = new Process();
+        //    p.StartInfo.FileName = "powercfg.exe";
+        //    p.StartInfo.CreateNoWindow = true;
+        //    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        //    p.StartInfo.Arguments = "/hibernate on"; // this might be different in other locales
+        //    return p.Start();
+        //}
 
         void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -53,22 +81,18 @@ namespace WakeUpANDSuspend
         {
             long waketime = (long)e.Argument;
 
-            using (SafeWaitHandle handle = CreateWaitableTimer(IntPtr.Zero, true, this.GetType().Assembly.GetName().Name.ToString() + "Timer"))
+            handle = CreateWaitableTimer(IntPtr.Zero, true, this.GetType().Assembly.GetName().Name.ToString() + "Timer");
+
+            if (SetWaitableTimer(handle, ref waketime, 0, IntPtr.Zero, IntPtr.Zero, true))
             {
-                if (SetWaitableTimer(handle, ref waketime, 0, IntPtr.Zero, IntPtr.Zero, true))
-                {
-                    using (EventWaitHandle wh = new EventWaitHandle(false, EventResetMode.AutoReset))
-                    {
-                        wh.SafeWaitHandle = handle;
-                        wh.WaitOne();
-                    }
-                }
-                else
-                {
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
+                wh = new EventWaitHandle(false, EventResetMode.AutoReset);
+                wh.SafeWaitHandle = handle;
+                wh.WaitOne();
+            }
+            else
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
         }
-
     }
 }
