@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -41,14 +42,25 @@ namespace WakeUpTimer
 
         }
 
-        public void SetWakeUpTime(DateTime WakeUp)
+        public bool SetWakeUpTime(DateTime WakeUp)
         {
-            bgWorker = new BackgroundWorker();
-            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
-            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
-            bgWorker.WorkerSupportsCancellation = true;
+            try
+            {
+                bgWorker = new BackgroundWorker();
+                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+                bgWorker.WorkerSupportsCancellation = true;
 
-            bgWorker.RunWorkerAsync(WakeUp.ToFileTime());
+                bgWorker.RunWorkerAsync(WakeUp.ToFileTime());
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                string err = ex.Message + "\n\n" + ex.StackTrace;
+                Debug.WriteLine(err);
+                return false;
+            }
         }
 
         public void StopWorkerAsync()
@@ -68,19 +80,28 @@ namespace WakeUpTimer
 
         private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            long waketime = (long)e.Argument;
-
-            handle = CreateWaitableTimer(IntPtr.Zero, true, this.GetType().Assembly.GetName().Name.ToString() + "Timer");
-
-            if (SetWaitableTimer(handle, ref waketime, 0, IntPtr.Zero, IntPtr.Zero, true))
+            try
             {
-                wh = new EventWaitHandle(false, EventResetMode.AutoReset);
-                wh.SafeWaitHandle = handle;
-                wh.WaitOne();
+                long waketime = (long)e.Argument;
+
+                handle = CreateWaitableTimer(IntPtr.Zero, true, this.GetType().Assembly.GetName().Name.ToString() + "Timer");
+
+                if (SetWaitableTimer(handle, ref waketime, 0, IntPtr.Zero, IntPtr.Zero, true))
+                {
+                    wh = new EventWaitHandle(false, EventResetMode.AutoReset);
+                    wh.SafeWaitHandle = handle;
+                    wh.WaitOne();
+                }
+                else
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                    System.Windows.Forms.MessageBox.Show("throw new Win32Exception(Marshal.GetLastWin32Error());");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                string err = ex.Message + "\n\n" + ex.StackTrace;
+                System.Windows.Forms.MessageBox.Show(err);
             }
         }
     }

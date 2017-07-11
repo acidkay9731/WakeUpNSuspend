@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WakeUpNSuspend", "WakeUpNSuspend\WakeUpNSuspend.csproj", "{083E0AB2-E0EA-42D4-AA65-CDB0C6F6C508}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WakeUpTimer", "WakeUpTimer.DLL\WakeUpTimer.csproj", "{214C6097-37A2-4B5F-8AB3-F028C2516375}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WakeUpTimerSetWPF", "WakeUpTimerSetWPF\WakeUpTimerSetWPF.csproj", "{6EBA2416-1F8B-48AF-81E9-49553A162006}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WakeUpNSuspendSetup", "WakeUpNSuspendSetup\WakeUpNSuspendSetup.vdproj", "{A519B306-FD59-4BF8-862D-8EE119993A3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{6EBA2416-1F8B-48AF-81E9-49553A162006}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EBA2416-1F8B-48AF-81E9-49553A162006}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EBA2416-1F8B-48AF-81E9-49553A162006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A519B306-FD59-4BF8-862D-8EE119993A3B}.Debug|Any CPU.ActiveCfg = Debug
+		{A519B306-FD59-4BF8-862D-8EE119993A3B}.Debug|Any CPU.Build.0 = Debug
+		{A519B306-FD59-4BF8-862D-8EE119993A3B}.Release|Any CPU.ActiveCfg = Release
+		{A519B306-FD59-4BF8-862D-8EE119993A3B}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

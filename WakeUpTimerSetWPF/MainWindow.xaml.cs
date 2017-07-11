@@ -36,30 +36,31 @@ namespace WakeUpTimerSetWPF
 
             for (int i = 0; i < 24; i++)
             {
-                cboWakeUpHour.Items.Add(i);
                 cboSleepHour.Items.Add(i);
+                cboWakeUpHour.Items.Add(i);
             }
 
-            cboWakeUpHour.SelectedIndex = now.Hour;
             cboSleepHour.SelectedIndex = now.Hour;
+            cboWakeUpHour.SelectedIndex = now.Hour;
 
             for (int i = 0; i < 60; i++)
             {
-                cboWakeUpMin.Items.Add(i);
                 cboSleepMin.Items.Add(i);
+                cboWakeUpMin.Items.Add(i);
             }
 
-            cboWakeUpMin.SelectedIndex = now.Minute;
-            cboSleepMin.SelectedIndex = now.Minute;
+            cboSleepMin.SelectedIndex = now.AddMinutes(1).Minute;
+            cboWakeUpMin.SelectedIndex = now.AddMinutes(3).Minute;
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                
-                DateTime dtWakeUp = new DateTime(now.Year, now.Month, now.Day, int.Parse(cboWakeUpHour.SelectedValue.ToString()), int.Parse(cboWakeUpMin.SelectedValue.ToString()), 0);
                 DateTime dtSleep = new DateTime(now.Year, now.Month, now.Day, int.Parse(cboSleepHour.SelectedValue.ToString()), int.Parse(cboSleepMin.SelectedValue.ToString()), 0);
+                DateTime dtWakeUp = new DateTime(now.Year, now.Month, now.Day, int.Parse(cboWakeUpHour.SelectedValue.ToString()), int.Parse(cboWakeUpMin.SelectedValue.ToString()), 0);
+
+                btnStart.Content = "STARTED!!!!";
 
                 wpTimer.SetTimer(dtSleep, dtWakeUp);
 

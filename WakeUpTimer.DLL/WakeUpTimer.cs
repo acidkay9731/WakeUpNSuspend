@@ -21,9 +21,9 @@ namespace WakeUpTimer
             {
                 timerMain = new Timer();
 #if DEBUG
-                timerMain.Interval = 1000; // 1분
+                timerMain.Interval = 1000; // 1초
 #else
-                timerMain.Interval = 1000 * 60; // 1분
+                timerMain.Interval = 1000 * 30; // 30초
 #endif
                 timerMain.Tick += TimerMain_Tick;
             }
@@ -57,20 +57,28 @@ namespace WakeUpTimer
         {
             try
             {
-#if DEBUG
-                dtWakeUp = dtWakeUp.AddMinutes(3);
-                dtSleep = dtSleep.AddMinutes(3);
-#else
-                dtWakeUp = dtWakeUp.AddDays(1);
-                dtSleep = dtSleep.AddDays(1);
-#endif
+
 
                 wup = new WakeUP();
-                wup.SetWakeUpTime(dtWakeUp);
+                bool result = wup.SetWakeUpTime(dtWakeUp);
 
-                
+                System.Threading.Thread.Sleep(1000);
+
+                if (result == false)
+                {
+                    MessageBox.Show("Error: SetWakeUpTime");
+                    return;
+                }
 
                 Application.SetSuspendState(PowerState.Suspend, false, false);
+
+#if DEBUG
+                dtSleep = dtSleep.AddMinutes(3);
+                dtWakeUp = dtWakeUp.AddMinutes(3);
+#else
+                dtSleep = dtSleep.AddDays(1);
+                dtWakeUp = dtWakeUp.AddDays(1);
+#endif
             }
             catch (Exception ex)
             {
@@ -79,12 +87,11 @@ namespace WakeUpTimer
             }
         }
 
-        public void SetTimer(DateTime _dtWakeUp, DateTime _dtSleep)
+        public void SetTimer(DateTime _dtSleep, DateTime _dtWakeUp)
         {
             try
             {
                 //timerMain.Stop();
-
                 //wup.StopWorkerAsync();
 
                 dtWakeUp = _dtWakeUp;
