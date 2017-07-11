@@ -70,7 +70,7 @@ namespace WakeUpTimer
                     return;
                 }
 
-                Application.SetSuspendState(PowerState.Suspend, false, false);
+                Application.SetSuspendState(PowerState.Hibernate, false, false);
 
 #if DEBUG
                 dtSleep = dtSleep.AddMinutes(3);

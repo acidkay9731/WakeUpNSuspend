@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace WakeUpTimer
 {
@@ -91,6 +92,9 @@ namespace WakeUpTimer
                     wh = new EventWaitHandle(false, EventResetMode.AutoReset);
                     wh.SafeWaitHandle = handle;
                     wh.WaitOne();
+
+                    //SendKeys.Send("{ENTER}");
+                    //SendKeys.Flush();
                 }
                 else
                 {
